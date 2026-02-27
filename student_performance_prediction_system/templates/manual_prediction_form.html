@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Manual Prediction</title>
+<style>
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #e8f5e9, #a5d6a7);
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.card {
+    background: #ffffff;
+    padding: 30px 25px;
+    border-radius: 15px;
+    width: 400px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 15px 25px rgba(0,0,0,0.2);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 30px rgba(0,0,0,0.3);
+}
+
+h2 {
+    text-align: center;
+    color: #621e3e;
+    margin-bottom: 25px;
+}
+
+input {
+    width: 100%;
+    padding: 12px 10px;
+    margin: 6px 0;
+    border-radius: 8px;
+    border: 1px solid #66bb6a;
+    box-sizing: border-box;
+}
+
+button {
+    width: 100%;
+    padding: 12px;
+    margin-top: 12px;
+    background: #2e7d32;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+button:hover {
+    background: #1b5e20;
+}
+
+.link-btn {
+    text-align: center;
+    margin-top: 15px;
+}
+
+.link-btn a {
+    color: #2e7d32;
+    text-decoration: none;
+    font-weight: bold;
+    transition: color 0.2s ease;
+}
+
+.link-btn a:hover {
+    color: #1b5e20;
+}
+</style>
+</head>
+<body>
+<div class="container">
+    <div class="card">
+        <h2>Manual Prediction</h2>
+        <form method="POST">
+            <input type="text" name="name" placeholder="Name" required>
+            <input type="text" name="roll_number" placeholder="Roll Number" required>
+            <input type="number" name="age" placeholder="Age">
+            <input type="text" name="gender" placeholder="Gender">
+            <input type="number" step="0.1" name="attendance" placeholder="Attendance (%)">
+            <input type="number" step="0.1" name="study_hours" placeholder="Daily Study Hours">
+            <input type="number" step="0.1" name="internet" placeholder="Internet Usage (hrs/day)">
+            <input type="number" step="0.1" name="internal1" placeholder="Internal Exam1 Marks">
+            <input type="number" step="0.1" name="internal2" placeholder="Internal Exam2 Marks">
+            <input type="number" step="0.1" name="assignment" placeholder="Assignment Marks">
+            <input type="number" step="0.1" name="lab" placeholder="Lab Marks">
+            <input type="number" step="0.1" name="mini_project" placeholder="Mini Project Marks">
+            <input type="number" step="0.1" name="major_project" placeholder="Major Project Marks">
+            <input type="number" step="0.1" name="cgpa" placeholder="CGPA">
+
+            <button type="submit">Predict</button>
+            <div class="link-btn">
+                <a href="{{ url_for('index') }}">Back to Login</a>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>

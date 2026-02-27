@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <h1 class="dashboard-heading">🎓Student Performance Prediction System</h1>
+    <title>Dashboard - 🎓Student Performance Prediction System</title>
+    <script>
+    window.semesters = {{ semesters|tojson }};
+    window.sem_marks = {{ sem_marks|tojson }};
+    window.sem_perc = {{ sem_perc|tojson }};
+
+    window.bca_labels = {{ bca_labels|tojson }};
+    window.bca_scores = {{ bca_scores|tojson }};
+
+    window.student = {{ student|tojson }};
+    </script>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+<body style="background-image: url('{{ url_for('static', filename='images/background2.jpg') }}'); background-size: cover; background-attachment: fixed;">
+
+<div class="header" style="background: linear-gradient(90deg, #0A858C, #A5E6E2); text-align:center; font-size:32px; font-weight:bold; color:white; padding:25px; text-shadow: 2px 2px 5px rgba(0,0,0,0.5);">
+   🎓  Student Performance Prediction System
+</div>
+
+<div class="container">
+
+    <!-- 1️⃣ Basic Details -->
+    <div class="card" style="background: linear-gradient(135deg,#A1C4FD,#C2E9FB);">
+        <h3>👤 Basic Details</h3>
+        <p><strong>Name:</strong> {{ student['Name'] }}</p>
+        <p><strong>Roll Number:</strong> {{ student['Roll Number'] }}</p>
+        <p><strong>Age:</strong> {{ student['Age'] }}</p>
+        <p><strong>Gender:</strong> {{ student['Gender'] }}</p>
+        <p><strong>DOB:</strong> {{ student['Date of Birth'] }}</p>
+        <p><strong>Branch:</strong> {{ student['Branch'] }}</p>
+        <p><strong>Phone:</strong> {{ student['Phone Number'] }}</p>
+        <p><strong>Email:</strong> {{ student['Email ID'] }}</p>
+    </div>
+
+    <!-- 2️⃣ 10th Details -->
+    <div class="card" style="background: linear-gradient(135deg,#FDEB71,#F8D800);">
+        <h3>🎓 10th Details</h3>
+        <p><strong>Marks:</strong> {{ student['10th Marks'] }}</p>
+        <p><strong>Percentage:</strong> {{ student['10th Percentage'] }}%</p>
+        <p><strong>Grade:</strong> {{ student['10th Grade'] }}</p>
+        <p><strong>Passout Year:</strong> {{ student['10th Pass Out Year'] }}</p>
+        <button onclick="document.getElementById('modal10').style.display='block'">🔍 View Full Details</button>
+    </div>
+
+    <!-- 3️⃣ Intermediate Details -->
+    <div class="card" style="background: linear-gradient(135deg,#FF9A9E,#FAD0C4);">
+        <h3>🎓 Intermediate Details</h3>
+        <p><strong>Group:</strong> {{ student['Intermediate Group'] }}</p>
+        <p><strong>Marks:</strong> {{ student['Intermediate Marks'] }}</p>
+        <p><strong>Percentage:</strong> {{ student['Intermediate Percentage'] }}%</p>
+        <p><strong>Grade:</strong> {{ student['Intermediate Grade'] }}</p>
+        <p><strong>Passout Year:</strong> {{ student['Intermediate Pass Out Year'] }}</p>
+        <button onclick="document.getElementById('modalInter').style.display='block'">🔍 View Full Details</button>
+    </div>
+
+    <!-- 4️⃣ Degree / BCA -->
+    <div class="card" style="background: linear-gradient(135deg,#A1FFCE,#FAFFD1);">
+        <h3>🎓 Degree / BCA</h3>
+        <p><strong>CGPA:</strong> {{ student['CGPA'] }}</p>
+        <p><strong>Current Semester:</strong> {{ student['Current Semester'] }}</p>
+        <p><strong>Course Status:</strong> {{ student['Course Status'] }}</p>
+        <canvas id="bcaChart"></canvas>
+        <button onclick="document.getElementById('modalDegree').style.display='block'">🔍 View Full Details</button>
+    </div>
+
+    <!-- 5️⃣ Family & Social -->
+    <div class="card" style="background: linear-gradient(135deg,#FDC830,#F37335);">
+        <h3>🏠 Family & Social</h3>
+        <p><strong>Family Background:</strong> {{ student['Family Background'] }}</p>
+        <p><strong>Social Factors:</strong> {{ student['Social Factors'] }}</p>
+        <p><strong>Extracurricular:</strong> {{ student['Extracurricular Activities'] }}</p>
+        <p><strong>Daily Study Hours:</strong> {{ student['Daily Study Hours'] }}</p>
+        <p><strong>Internet Usage:</strong> {{ student['Internet Usage (Hours/Day)'] }} hrs/day</p>
+    </div>
+
+    <!-- 6️⃣ Attendance Chart -->
+    <div class="card" style="background: linear-gradient(135deg,#C2E9FB,#A1C4FD);">
+        <h3>📊 Semester Marks & %</h3>
+        <canvas id="attendanceChart"></canvas>
+    </div>
+
+    <!-- 7️⃣ Performance Prediction -->
+    <div class="card" style="background: linear-gradient(135deg,#FFDEE9,#B5FFFC);">
+        <h3>⚡ Performance Prediction</h3>
+        <p><strong>Predicted Performance:</strong> {{ student['Performance_Prediction'] }}</p>
+        <p><strong>Strength:</strong> {{ student['Strength Area'] }}</p>
+        <p><strong>Weakness:</strong> {{ student['Weak Area'] }}</p>
+        <p><strong>Suggestion:</strong> {{ student['Suggestion'] }}</p>
+        <canvas id="skillChart"></canvas>
+    </div>
+
+    <!-- 8️⃣ Career Prediction -->
+    <div class="card" style="background: linear-gradient(135deg,#FAD0C4,#FFD1FF);">
+        <h3>💼 Career Prediction</h3>
+        <p><strong>Suggested Career:</strong> {{ student['Career_Prediction'] }}</p>
+        <p><strong>Placement Readiness:</strong> {{ student['Placement Readiness'] }}%</p>
+        <canvas id="placementChart"></canvas>
+    </div>
+
+    <!-- 9️⃣ Alerts -->
+    <div class="card" style="background: linear-gradient(135deg,#FEE140,#FA709A);">
+        <h3>⚠️ Alerts</h3>
+        <p><strong>Dropout Risk Score:</strong> {{ student['Dropout Risk Score'] }}</p>
+        <p><strong>Risk Level:</strong> {{ student['Risk Level'] }}</p>
+        <p>Check upcoming exams & assignments!</p>
+    </div>
+
+    <!-- 🔟 Reports Download -->
+    <div class="card" style="background: linear-gradient(135deg,#A1FFCE,#FAFFD1);">
+        <h3>📥 Reports</h3>
+        <a href="{{ url_for('download_csv') }}"><button>Download Excel</button></a>
+        <button onclick="downloadPDF('{{ student['Name'] }}')">Download PDF</button>
+    </div>
+
+</div>
+
+<!-- Modals (10th, Intermediate, Degree) -->
+<div id="modal10" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="document.getElementById('modal10').style.display='none'">&times;</span>
+        <h2>10th Full Details</h2>
+        <p>Name: {{ student['Name'] }}</p>
+        <p>Roll Number: {{ student['Roll Number'] }}</p>
+        <p>Age: {{ student['Age'] }}</p>
+        <p>DOB: {{ student['Date of Birth'] }}</p>
+        <p>Father: {{ student['Parent Name'] }}</p>
+        <p>10th Marks: {{ student['10th Marks'] }}</p>
+        <p>Percentage: {{ student['10th Percentage'] }}</p>
+        <p>Grade: {{ student['10th Grade'] }}</p>
+        <p>Passout Year: {{ student['10th Pass Out Year'] }}</p>
+    </div>
+</div>
+
+<div id="modalInter" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="document.getElementById('modalInter').style.display='none'">&times;</span>
+        <h2>Intermediate Full Details</h2>
+        <p>Name: {{ student['Name'] }}</p>
+        <p>Roll Number: {{ student['Roll Number'] }}</p>
+        <p>Group: {{ student['Intermediate Group'] }}</p>
+        <p>Marks: {{ student['Intermediate Marks'] }}</p>
+        <p>Percentage: {{ student['Intermediate Percentage'] }}</p>
+        <p>Grade: {{ student['Intermediate Grade'] }}</p>
+        <p>Passout Year: {{ student['Intermediate Pass Out Year'] }}</p>
+    </div>
+</div>
+
+<div id="modalDegree" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="document.getElementById('modalDegree').style.display='none'">&times;</span>
+        <h2>Degree/BCA Full Details</h2>
+        <p>Name: {{ student['Name'] }}</p>
+        <p>Roll Number: {{ student['Roll Number'] }}</p>
+        <p>CGPA: {{ student['CGPA'] }}</p>
+        <p>Current Semester: {{ student['Current Semester'] }}</p>
+        <p>Course Status: {{ student['Course Status'] }}</p>
+        <p>Internal1: {{ student['Internal Exam1 Marks'] }}</p>
+        <p>Internal2: {{ student['Internal Exam2 Marks'] }}</p>
+        <p>Assignment: {{ student['Assignment Average'] }}</p>
+        <p>Lab: {{ student['Lab Marks'] }}</p>
+        <p>Mini Project: {{ student['Mini Project Marks'] }}</p>
+        <p>Major Project: {{ student['Major Project Marks'] }}</p>
+    </div>
+</div>
+
+<script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
+<script>
+    // -------------------------
+    // ATTENDANCE CHART
+    // -------------------------
+    new Chart(document.getElementById('attendanceChart').getContext('2d'), {
+        type:'bar',
+        data: {
+            labels: {{ semesters|tojson }},
+            datasets:[
+                {label:'Semester Marks', data:{{ sem_marks|tojson }}, backgroundColor:'rgba(75,192,192,0.7)'},
+                {label:'Semester %', data:{{ sem_perc|tojson }}, backgroundColor:'rgba(255,99,132,0.7)'}
+            ]
+        },
+        options:{ responsive:true }
+    });
+
+    // -------------------------
+    // BCA MINI CHART
+    // -------------------------
+    new Chart(document.getElementById('bcaChart').getContext('2d'), {
+        type:'line',
+        data: {
+            labels: {{ bca_labels|tojson }},
+            datasets:[{
+                label:'BCA Scores',
+                data: {{ bca_scores|tojson }},
+                backgroundColor:'rgba(10,133,140,0.3)',
+                borderColor:'#0A858C',
+                fill:true,
+                tension:0.3
+            }]
+        },
+        options:{ responsive:true }
+    });
+
+    // -------------------------
+    // SKILL MATRIX RADAR
+    // -------------------------
+    new Chart(document.getElementById("skillChart"), {
+        type: "radar",
+        data: {
+            labels: ["Communication","Programming","Logic","Leadership","Technical"],
+            datasets: [{
+                label: "Skill Level",
+                data: [{{ student['Communication Skills'] }}, {{ student['Programming Skills'] }}, {{ student['Logical Thinking'] }}, {{ student['Leadership Quality'] }}, {{ student['Technical Score'] }}],
+                backgroundColor:'rgba(255,99,132,0.2)',
+                borderColor:'rgba(255,99,132,1)'
+            }]
+        },
+        options:{ responsive:true }
+    });
+
+    // -------------------------
+    // PLACEMENT DOUGHNUT
+    // -------------------------
+    new Chart(document.getElementById("placementChart"), {
+        type: "doughnut",
+        data: {
+            labels: ["Ready","Needs Improvement"],
+            datasets: [{
+                data: [{{ student['Placement Readiness'] }}, {{ 100 - student['Placement Readiness'] }}],
+                backgroundColor: ['#36A2EB','#FF6384']
+            }]
+        },
+        options:{ responsive:true }
+    });
+
+    // -------------------------
+    // PDF DOWNLOAD
+    // -------------------------
+    function downloadPDF(studentName){
+        const { jsPDF } = window.jspdf;
+        let element = document.body;
+        html2canvas(element).then((canvas)=>{
+            let imgData = canvas.toDataURL('image/png');
+            let pdf = new jsPDF('p','mm','a4');
+            let imgWidth = 200;
+            let pageHeight = 295;
+            let imgHeight = canvas.height * imgWidth / canvas.width;
+            pdf.addImage(imgData,'PNG',5,5,imgWidth,imgHeight);
+            pdf.save(studentName + "_Report.pdf");
+        });
+    }
+</script>
+</body>
+</html>

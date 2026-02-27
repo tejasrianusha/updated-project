@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Manual Prediction</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+body{
+  font-family:'Segoe UI';
+  background:linear-gradient(135deg,#0A858C,#4DD0E1);
+  margin:0;
+  padding:30px;
+}
+.container{
+  max-width:750px;
+  margin:auto;
+}
+.card{
+  background:white;
+  padding:20px;
+  border-radius:15px;
+  box-shadow:0 10px 20px rgba(0,0,0,0.15);
+  margin-bottom:20px;
+}
+h2{color:#0A858C;}
+input,select{
+  width:100%;
+  padding:10px;
+  margin:8px 0;
+  border-radius:8px;
+  border:1px solid #ccc;
+}
+button{
+  padding:12px;
+  background:#0A858C;
+  color:rgb(248, 244, 244);
+  border:none;
+  border-radius:8px;
+  width:100%;
+  font-weight:bold;
+}
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+  gap:20px;
+}
+.result-title{
+  color:#0A858C;
+  font-weight:bold;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<!-- FORM CARD -->
+<div class="card">
+<h2>📊 Manual Student Prediction</h2>
+
+<form method="POST">
+
+<input type="text" name="name" placeholder="Student Name" required>
+<input type="number" name="roll" placeholder="Roll Number" required>
+
+<select name="gender" required>
+  <option value="">Select Gender</option>
+  <option value="Male">Male</option>
+  <option value="Female">Female</option>
+</select>
+
+<input type="number" name="sem_marks" placeholder="BCA Past Semester Average Marks (0-100)" required>
+<input type="number" step="0.1" name="gpa" placeholder="Current GPA (0-10)" required>
+<input type="number" name="attendance" placeholder="Attendance (%)" required>
+
+<select name="assignment" required>
+  <option value="">Assignment Submitted?</option>
+  <option value="Yes">Yes</option>
+  <option value="No">No</option>
+</select>
+
+<input type="number" name="study_hours" placeholder="Daily Study Hours" required>
+
+<button type="submit">Predict Performance</button>
+
+</form>
+</div>
+
+{% if prediction %}
+
+<!-- RESULTS GRID -->
+<div class="grid">
+
+<div class="card">
+<h3 class="result-title">👤 Student Info</h3>
+<p><b>Name:</b> {{name}}</p>
+<p><b>Roll:</b> {{roll}}</p>
+<p><b>Gender:</b> {{gender}}</p>
+</div>
+
+<div class="card">
+<h3 class="result-title">📈 Academic Details</h3>
+<p><b>Sem Avg Marks:</b> {{sem_marks}}</p>
+<p><b>GPA:</b> {{gpa}}</p>
+<p><b>Attendance:</b> {{attendance}}%</p>
+<p><b>Assignment:</b> {{assignment}}</p>
+<p><b>Study Hours:</b> {{study_hours}}</p>
+</div>
+
+<div class="card">
+<h3 class="result-title">🎯 Prediction Result</h3>
+<h2 style="color:#0A858C;">{{prediction}}</h2>
+</div>
+
+<div class="card">
+<h3 class="result-title">💼 Career Suggestion</h3>
+<p>{{career}}</p>
+</div>
+
+<div class="card">
+<h3 class="result-title">📌 Improvement Suggestion</h3>
+<p>{{suggestion}}</p>
+</div>
+
+</div>
+
+<!-- CHARTS -->
+<div class="grid">
+
+<div class="card">
+<canvas id="performanceChart"></canvas>
+</div>
+
+<div class="card">
+<canvas id="comparisonChart"></canvas>
+</div>
+
+</div>
+
+<script>
+const performanceChart = new Chart(document.getElementById('performanceChart'), {
+    type: 'bar',
+    data: {
+        labels: ['Sem Marks','GPA*10','Attendance'],
+        datasets: [{
+            label: 'Performance Metrics',
+            data: [{{sem_marks}}, {{gpa*10}}, {{attendance}}],
+            backgroundColor: ['#0A858C','#26C6DA','#4DD0E1']
+        }]
+    }
+});
+
+const comparisonChart = new Chart(document.getElementById('comparisonChart'), {
+    type: 'radar',
+    data: {
+        labels: ['Marks','GPA','Attendance','Study Hours'],
+        datasets: [{
+            label: 'Student Profile',
+            data: [{{sem_marks}}, {{gpa*10}}, {{attendance}}, {{study_hours*10}}],
+            backgroundColor:'rgba(10,133,140,0.2)',
+            borderColor:'#0A858C'
+        }]
+    }
+});
+</script>
+
+{% endif %}
+
+</div>
+
+</body>
+</html>
